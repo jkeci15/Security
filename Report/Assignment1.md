@@ -1,14 +1,14 @@
 ## Assignment 1 
 
-### Setting up Connection:
+### Setting up the connection:
 
-The assignment is about establishing a securte connection between a client and a server using the defined port 7007. 
+The assignment is about establishing a secure connection between a client and a server using the predefined port 7007.
 
 Our implemenentation makes use of the provider defined in the JSSE (Java Secure Socket Extension).
 
-We chose this provider because is supports both SSL and TLS protocols. This way, they add a level of security when we establish a connection between the two entities. The security consist of:
+We chose this provider because it supports both SSL and TLS protocols. This way, they add a level of security when we establish a connection between the two entities. Among others, it includes functionalities related to:
 
--  Data encryption
+- Data encryption
 
 - Server authentication
 
@@ -18,15 +18,15 @@ We chose this provider because is supports both SSL and TLS protocols. This way,
 
   ​																
 
-  After this secure connection is established TCP protocol is used to transmit messages between them.
+  After a secure connection is established, TCP protocol is used to transmit messages back and forth between the client and the server.
 
-The steps neede to make the connection are as follow:
+The steps needed to create the connection are as follows:
 
 - Firstly we generate a certificate for both entities as they are needed for the Handshake part of the connection. In this part, both entities agree on the parameters required to make the connection such as : 
   - Session ID
   - Compression method
   - Cipher Suite etc.
 
-- After the handshake phase is completed, the two entities can exchange messages using the Secure Socket Layer as long as the client wishes to terminate the connection.
+- After the handshake phase is completed, the two entities can exchange messages using the Secure Socket Layer as long as the client doesn't wish to terminate the connection.
 
-- During the communication, the client writes a message and the server receives the message which it later sends back to the client to verify what the message was.
+- During the communication, the client writes messages that the server receives and sends back to the client. This is done to verify that the message remains unchanged from the moment it sent by the client until it is received by the server, thus we have ensured data integrity.
