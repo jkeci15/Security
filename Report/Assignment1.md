@@ -1,3 +1,5 @@
+Group A Report
+
 ## Assignment 1 
 
 ### Setting up the connection:
@@ -24,9 +26,18 @@ The steps needed to create the connection are as follows:
 
 - Firstly we generate a certificate for both entities as they are needed for the Handshake part of the connection. In this part, both entities agree on the parameters required to make the connection such as : 
   - Session ID
+
   - Compression method
+
   - Cipher Suite etc.
 
-- After the handshake phase is completed, the two entities can exchange messages using the Secure Socket Layer as long as the client doesn't wish to terminate the connection.
+    ![](First.jpeg)
 
+    ![](Second.jpeg)
+
+    ![](Third.jpeg)
+
+
+
+- After the environment is set up and handshake phase is completed, the two entities can exchange messages using the Secure Socket Layer as long as the client doesn't wish to terminate the connection.
 - During the communication, the client writes messages that the server receives and sends back to the client. This is done to verify that the message remains unchanged from the moment it sent by the client until it is received by the server, thus we have ensured data integrity.
