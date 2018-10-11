@@ -1,8 +1,6 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.*;
 import java.security.Security;
 import com.sun.net.ssl.internal.ssl.Provider;
 
@@ -10,55 +8,63 @@ public class Server
 {
     public static void main(String args[])
     {
-        //The Port number through which this server will accept client connections
-        int port = 35786;
-        /*Adding the JSSE (Java Secure Socket Extension) provider which provides SSL and TLS protocols
-        and includes functionality for data encryption, server authentication, message integrity, 
-        and optional client authentication.*/
+    	//Specify the port number where the server accepts the client connections
+        int port = 7007;
+        
         Security.addProvider(new Provider());
-        //specifing the keystore file which contains the certificate/public key and the private key
+        //specify the keystore file with the certificate/public key and the private key, and its password
         System.setProperty("javax.net.ssl.keyStore","myKeyStore.jks");
-        //specifing the password of the keystore file
         System.setProperty("javax.net.ssl.keyStorePassword","1tsBritneyBi$h");
-        //This optional and it is just to show the dump of the details of the handshake process 
-        System.setProperty("javax.net.debug","all");
+        
         try
         {
-            //SSLServerSocketFactory establishes the ssl context and and creates SSLServerSocket 
-            SSLServerSocketFactory sslServerSocketfactory = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
-            //Create SSLServerSocket using SSLServerSocketFactory established ssl context
-            SSLServerSocket sslServerSocket = (SSLServerSocket)sslServerSocketfactory.createServerSocket(port);
-            System.out.println("Echo Server Started & Ready to accept Client Connection");
-            //Wait for the SSL client to connect to this server
+        	//create SSLSocket for  the server in the given port
+            SSLServerSocket sslServerSocket = (SSLServerSocket)SSLServerSocketFactory.getDefault().createServerSocket(port);
+            System.out.println("The server is ready to accept a client connection.");
+            
+            //wait for a client connection to our server
             SSLSocket sslSocket = (SSLSocket)sslServerSocket.accept();
-            //Create InputStream to recive messages send by the client
-            DataInputStream inputStream = new DataInputStream(sslSocket.getInputStream());
-            //Create OutputStream to send message to client
-            DataOutputStream outputStream = new DataOutputStream(sslSocket.getOutputStream());
-            outputStream.writeUTF("Hello Client, Say Something!");
-            //Keep sending the client the message you recive unless he sends the word "close"
+            
+            //create an input and an output stream to send and receive messages
+            DataInputStream inStream = new DataInputStream(sslSocket.getInputStream());
+            DataOutputStream outStream = new DataOutputStream(sslSocket.getOutputStream());
+            
+            //send the first message to the client to let them know of the successful connection
+            //and how they can terminate it
+            outStream.writeUTF("Your connection is established. Leave a message. \n"
+            		+ "When you no longer want to use this connection, send a 'Bye Server' message.");
+            
+            //Keep sending the client the message you receive from them until they send "Bye Server"
             while(true)
             {
-                String recivedMessage = inputStream.readUTF();
-                System.out.println("Client Said : " + recivedMessage);
-                if(recivedMessage.equals("close"))
+            	//get the client's message from the input stream and print it
+                String receivedMsg = inStream.readUTF();
+                System.out.println("Client wrote : " + receivedMsg);
+                
+                if(receivedMsg.equals("Bye Server"))
                 {
-                    outputStream.writeUTF("Bye");
-                    outputStream.close();
-                    inputStream.close();
+                	System.out.println("Closing connection.");
+                	//let the Client know the connection will no longer be open
+                    outStream.writeUTF("The connection was terminated.");
+                    
+                    //close both Streams of communication
+                    outStream.close();
+                    inStream.close();
+                    
+                    //close the Sockets in order to no longer accept any packets
                     sslSocket.close();
                     sslServerSocket.close();
                     break;
                 }
                 else
                 {
-                    outputStream.writeUTF("You Said : "+recivedMessage);
+                    outStream.writeUTF("You wrote: "+receivedMsg);
                 }
             }
         }
-        catch(Exception ex)
+        catch(Exception e)
         {
-            System.err.println("Error Happened : "+ex.toString());
+            System.err.println("An error has happened on the server's side: "+ e.toString());
         }
     }
 }

@@ -1,61 +1,66 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.*;
 import java.security.Security;
 import java.util.Scanner;
-
 import com.sun.net.ssl.internal.ssl.Provider;
 
 public class Client
 {
     public static void main(String args[])
     {
-        //The Port number through which the server will accept this clients connection
-        int serverPort = 35786;
-        //The Server Address
-        String serverName = "localhost";
-        /*Adding the JSSE (Java Secure Socket Extension) provider which provides SSL and TLS protocols
-        and includes functionality for data encryption, server authentication, message integrity, 
-        and optional client authentication.*/
+        //We provide the port and name of the Server with which the client will attempt to connect
+    	int port = 7007;
+        String name = "localhost";
+
         Security.addProvider(new Provider());
-        //specifing the trustStore file which contains the certificate & public of the server
+        //specifying the trustStore file which contains the certificate & public of the server
         System.setProperty("javax.net.ssl.trustStore","myTrustStore.jts");
-        //specifing the password of the trustStore file
+        //specifying the password of the trustStore file
         System.setProperty("javax.net.ssl.trustStorePassword","1tsBritneyBi$h");
-        //This optional and it is just to show the dump of the details of the handshake process 
-        System.setProperty("javax.net.debug","all");
         try
         {
-            //SSLSSocketFactory establishes the ssl context and and creates SSLSocket 
-            SSLSocketFactory sslsocketfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
-            //Create SSLSocket using SSLServerFactory already established ssl context and connect to server
-            SSLSocket sslSocket = (SSLSocket)sslsocketfactory.createSocket(serverName,serverPort);
-            //Create OutputStream to send message to server
-            DataOutputStream outputStream = new DataOutputStream(sslSocket.getOutputStream());
-            //Create InputStream to read messages send by the server
-            DataInputStream inputStream = new DataInputStream(sslSocket.getInputStream());
-            //read the first message send by the server after being connected
-            System.out.println(inputStream.readUTF());
+            //Create SSLSocket and connect to server
+            SSLSocket sslSocket = (SSLSocket) SSLSocketFactory.getDefault().createSocket(name,port);
+           
+            //create an output stream through which we send messages to the server
+            DataOutputStream outStream = new DataOutputStream(sslSocket.getOutputStream());
+            //create an inputStream from which we read messages sent to us by the server
+            DataInputStream inStream = new DataInputStream(sslSocket.getInputStream());
             
-                Scanner sc = new Scanner(System.in);
-            //Keep sending sending the server the message entered by the client unless the it is "close"
+            
+            //read the first message sent by the server as soon as connection is established
+            System.out.println(inStream.readUTF());
+            
+            Scanner sc = new Scanner(System.in);
+            
+            //Keep sending sending the server the message entered by the client
+            //until the server terminates the connection
             while (true)
             {
-                System.out.println("Write a Message : ");
-                String messageToSend = sc.nextLine();
-                outputStream.writeUTF(messageToSend);
-                System.err.println(inputStream.readUTF());
-                if(messageToSend.equals("close"))
+                System.out.println("Enter a message to the server:");
+                String message = sc.nextLine();
+                
+                //send the message to the output stream
+                outStream.writeUTF(message);
+                
+                //read the incoming message form the server
+                String serverMsg = inStream.readUTF();
+                System.out.println("The server says: \""+serverMsg+"\"");
+                
+                //check if server has notified that the connection will be terminated
+                if(serverMsg.equals("The connection was terminated."))
                 {
+                    sc.close();
                     break;
                 }
             }
-            sc.close();
         }
-        catch(Exception ex)
+        catch(Exception e)
         {
-            System.err.println("Error Happened : "+ex.toString());
+        	//in case of an exception let the client know what went wrong
+        	System.out.println("Something wrong has happened! " + e.toString());
+            System.out.println("Mission aborted");
         }
     }
 }
