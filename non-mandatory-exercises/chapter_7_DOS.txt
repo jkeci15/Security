@@ -1,0 +1,74 @@
+Normal:
+The adversary may also actively determine which ports are open on the target
+machine by sending IP datagrams and analyzing the responses. This is called port
+scanning. The simplest way to determine the set of open ports on a target machine
+is to try to connect to every single port. In the case of an open TCP port, the target
+machine will complete a TCP three-way handshake. If completion of the handshake
+fails (if the port is closed, the target typically responds with a TCP reset segment)
+the adversary considers the port to be closed. Similarly for UDP ports, if the port
+is closed then the target will reply with an ICMP port unreachable message. However,
+this method has an important drawback: It typically leaves traces on the target
+machine, such as error messages or a large number of interrupted sessions.
+
+Stealth: 
+To prevent or complicate detection, there exist so-called stealth scans. This type
+of scan exploits the fact that operating systems react to invalid connection attempts.
+Based on answers to invalid attempts, an adversary can decide if the corresponding
+port is open or not. Since these attempts do not result in established sessions,
+the application waiting for input from the corresponding port will not create error
+messages. Moreover port scanners such as Nmap have additional options that try to
+circumvent firewalls. Firewalls, in turn, may try to detect or prevent stealth scans.
+
+RQ's:
+7.3 What is the goal of an HTTP flood attack?
+To prevent the target from responding to legitimate users. Any flooding attack aims to overload some network link to the server. Typically a http flooding attack uses a request that uses a lot of processing power (like downloading a large file) and thus overload the servers ressources making them unable to process legitimate request. 
+
+7.5 Why do many DoS attacks use packets with spoofed source addresses?
+Two reasons:
+1. To avoid detection
+2. To enable a reflector attack. The source address would then be spoofed to actually be the target's address.
+
+Problems:
+7.1
+In order to implement a classic DoS flood attack, the attacker must generate a sufficiently large volume of packets to exceed the capacity of the link to the target organization. Consider an attack using ICMP echo request (ping) packets that are 100 bytes in size (ignoring framing overhead). How many of these packets per second must the attacker send to flood a target organization using a 8-Mbps link? How many per second if the packets are 1000 bytes in size? Or 1460 bytes?
+
+Each request: 100 bytes:
+1 byte = 8 bit
+8-Mbps = 8.000.000 BITs p/s → 1.000.000 BYTEs p/s
+1.000.000 / 100 = 10.000 → 10.001 required packets p/s to overload link.
+
+Request on 1000 bytes: 
+1.000.000 / 1.000 = 1.000 → 1.001 required packets p/s to overload link.
+
+Request on 1460 bytes:
+1.000.000 / 1.460 = 684,93 → 685 required packets p/s to overload link.
+
+7.3
+Consider a distributed variant of the attack we explore in Problem 7.1. Assume the attacker has compromised a number of broadband-connected residential PCs to use as zombie systems. Also assume each such system has an average uplink capacity of 256 kbps. What is the maximum number of 100-byte ICMP echo request packets a single zombie PC can send per second? If the packet size is 1000 bytes? Or 1500 bytes? How many such zombie systems would the attacker need to flood a target organization using a 8-Mbps link? Given reports of botnets composed of many thousands of zombie systems, what can you conclude about their controller’s ability to launch DDoS attacks on multiple such organizations simultaneously? Or on a major organization with multiple, much larger net- work links than we have considered in these problems?
+256 Kbps = 256.000 bps = 32.000 Bps
+
+Maximum number of 100-byte: 32.000 / 100 = 320 → 321 packets pr/s
+1000 bytes: 32.000 / 1.000 = 32 → 33 packets pr/s
+1500 bytes: 32.000 / 1.500 = 21,3 → 22 packets pr/s
+
+From 7.1 → 100-byte: #Zombies: 10.001 / 331 = 30,2
+         → 1000-byte: #Zombies: 1.001 / 33 = 30,3
+         → 1500-byte: #Zombies: 685 / 22 = 31,13 
+
+Conclusion: The size of the packets doesn't matter (if you ignore frame size/overhead), it's the zombies uplink connection speed that matters.
+
+
+7.4
+In order to implement a DNS amplification attack, the attacker must trigger the creation of a sufficiently large volume of DNS response packets from the intermediary to exceed the capacity of the link to the target organization. Consider an attack where the DNS response packets are 100 bytes in size (ignoring framing overhead). How many of these packets per second must the attacker trigger to flood a target organization using an 8-Mbps link? If packet size is 1000 bytes? Or 1500 bytes? If the DNS request packet to the intermediary is 70 bytes in size, how much bandwidth does the attacker consume out of the 8-Mbps link to send the necessary rate of DNS request packets?
+
+From 7.1
+With 100 byte you should generate 10.001 packets pr/s. If the packet to the intermediary is 70 bytes, you will consume 10.001*(70*8) = 5.600.560 ≈ 5,6 Mbps
+1.000 byte: 1.001*(70*8) = 560.560 ≈ 0,56 Mbps
+1.500 byte: 685*(70*8) = 383.600 ≈ 0,38 Mbps
+
+Conclusion: With an amplification attack, the relative size between the request to the intermediary and the response from the intermediary is what matters most.
+
+7.5
+It is discussed that an amplification attack, which is a variant of reflection attack, can be launched by using any type of a suitable UDP service, such as the echo service. However, TCP services cannot be used in this attack. Why?
+
+Amplification attack uses a broadcast address which targets an entire network. TCP can't be directed at broadcast adresses.

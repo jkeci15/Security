@@ -1,0 +1,22 @@
+Review:
+1.1 What is meant by the CIA triad?
+- Confidentiality - the correct person send it
+- Integrity - Data has not been tampered
+- Availability - Some sort of service is running.
+
+Problems:
+1.1 Consider a student information system (SIS) in which students provide a university student number (USN) and a card for account access. Give examples of confidentiality, integrity, and availability requirements associated with the system and, in each case, indicate the degree of the importance of the requirement.
+- Confidentiality: The card can only be used by the student which it belongs
+- Integrity: The cards and the student number can't be changed.
+- Availability: The card or the scanner can't be destroyed.
+
+1.4
+For each of the following assets, assign a low, moderate, or high impact level for the loss of confidentiality, availability, and integrity, respectively. Justify your answers.
+a. An organization managing public information on its Web server.
+b. A law enforcement organization managing extremely sensitive investigative
+information.
+c. A financial organization managing routine administrative information (not privacy-
+related information).
+d. An information system used for large acquisitions in a contracting organization
+contains both sensitive, pre-solicitation phase contract information and routine administrative information. Assess the impact for the two data sets separately and the information system as a whole.
+e. A power plant contains a SCADA (supervisory control and data acquisition) sys- tem controlling the distribution of electric power for a large military installation. The SCADA system contains both real-time sensor data and routine administra- tive information. Assess the impact for the two data sets separately and the infor- mation system as a whole.
